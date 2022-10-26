@@ -1,5 +1,6 @@
 package com.example.crud.modules.auth.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class Role {
     private String description;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+    @JsonIgnore
     private Collection<User> users;
 
     public Role() {
