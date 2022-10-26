@@ -1,5 +1,6 @@
 package com.example.crud.modules.auth.entities;
 
+import com.example.crud.modules.auth.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -59,6 +60,17 @@ public class User implements UserDetails {
     private Collection<Role> roles;
 
     public User() {
+    }
+
+    public User(UserDto userDto, Collection<Role> roles) {
+        this.email = userDto.getEmail();
+        this.password = userDto.getPassword();
+        this.birthDay = userDto.getBirthDay();
+        this.roles = roles;
+
+        this.isEnable = false;
+        this.isAccountNonLocked = false;
+        this.isAccountNonExpired = false;
     }
 
     @Override

@@ -25,5 +25,5 @@ public class UserDto implements Serializable {
     @Past
     @NotNull
     private final Date birthDay;
-    private final Collection<Role> roles;
+    private final Long[] roles;
 }
