@@ -34,6 +34,7 @@ public class User implements UserDetails {
     @NotBlank
     private String email;
 
+    @NotNull
     private String password;
 
     @Past
