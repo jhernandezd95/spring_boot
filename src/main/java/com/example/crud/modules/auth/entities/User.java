@@ -33,22 +33,28 @@ public class User implements UserDetails {
     @Email
     @NotNull
     @NotBlank
+    @Column(unique = true)
     private String email;
 
     @NotNull
+    @Column(nullable = false)
     private String password;
 
     @Past
     @NotNull
+    @Column(nullable = false)
     private Date birthDay;
 
     @Past
     private Date lastLogin;
 
+    @Column(nullable = false)
     private Boolean isEnable;
 
+    @Column(nullable = false)
     private Boolean isAccountNonLocked;
 
+    @Column(nullable = false)
     private Boolean isAccountNonExpired;
 
     @ManyToMany(cascade = CascadeType.ALL)

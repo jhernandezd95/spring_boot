@@ -39,17 +39,9 @@ public class JwtFilter extends OncePerRequestFilter {
             List<GrantedAuthority> authorityList = jwtService.roles(authHeader).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(jwtService.user(authHeader), null, authorityList);
             SecurityContextHolder.getContext().setAuthentication(token);
-
-            chain.doFilter(request, response);
-        } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
-    }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
-        return Arrays.asList(WHITE_LIST).contains(path);
+        chain.doFilter(request, response);
     }
 
 }
