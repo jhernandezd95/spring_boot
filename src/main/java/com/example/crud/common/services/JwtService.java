@@ -4,15 +4,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class JwtService {
@@ -20,18 +16,18 @@ public class JwtService {
     private static final String BEARER = "Bearer ";
     private static final String USER_CLAIM = "user";
     private static final String ROLE_CLAIM = "roles";
-    private static String ISSUER;
 
-    private static Long EXPIRES_IN_MILLISECONDS;
+    @Value("${jwt.issuer}")
+    private static String ISSUER = "com.example.crud";
 
-    private static String SECRET;
+    @Value("jwt.expire")
+    private static Long EXPIRES_IN_MILLISECONDS = Long.valueOf(36000);
 
-    @Autowired
-    public JwtService(@Value("${jwt.secret}") String secret, @Value("${jwt.issuer}") String issuer,
-                      @Value("${jwt.expire}") int expire) {
-        SECRET = secret;
-        EXPIRES_IN_MILLISECONDS = (long) expire;
-        ISSUER = issuer;
+    @Value("${jwt.secret}")
+    private static String SECRET = "123446";
+
+
+    public JwtService() {
     }
 
     public boolean isBearer(String authorization) {
@@ -40,14 +36,19 @@ public class JwtService {
                 && authorization.split("\\.").length == 3;
     }
 
-    public String createToken(String user, Collection<GrantedAuthority> role) {
+    public String createToken(String user, Collection<? extends GrantedAuthority> authorities) {
+
+        List<String> roles = new ArrayList<>();
+        for (GrantedAuthority authority : authorities) {
+            roles.add(authority.getAuthority());
+        }
         return JWT.create()
                 .withIssuer(ISSUER)
                 .withIssuedAt(new Date())
                 .withNotBefore(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRES_IN_MILLISECONDS * 1000))
                 .withClaim(USER_CLAIM, user)
-                .withClaim(ROLE_CLAIM, (List<?>) role)
+                .withClaim(ROLE_CLAIM, roles)
                 .sign(Algorithm.HMAC256(SECRET));
     }
 
@@ -64,9 +65,10 @@ public class JwtService {
             throw new JWTVerificationException("It is not bearer");
         }
         try {
+            String token = authorization.split(" ")[1];
             return JWT.require(Algorithm.HMAC256(SECRET))
                     .withIssuer(ISSUER).build()
-                    .verify(authorization);
+                    .verify(token);
         } catch (Exception exception) {
             throw exception;
         }
