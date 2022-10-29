@@ -1,5 +1,6 @@
 package com.example.crud.modules.auth.services;
 
+import com.example.crud.common.http_errors.NotFoundException;
 import com.example.crud.common.services.JwtService;
 import com.example.crud.modules.auth.dto.ReqLoginDto;
 import com.example.crud.modules.auth.dto.ResLoginDto;
@@ -50,7 +51,7 @@ public class AuthService {
             Optional<Role> role = roleRepository.findById(id);
 
             if (role.isEmpty()) {
-                System.out.println("Role not found");
+                throw new NotFoundException("Role not found with ids " + Arrays.toString(ids));
             }
             return role.get();
         }).collect(Collectors.toList());
@@ -58,14 +59,18 @@ public class AuthService {
 
     public ResLoginDto login(@NotNull ReqLoginDto loginDto) {
 
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
-        Authentication auth = authenticationManager.authenticate(authentication);
+        try {
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
+            Authentication auth = authenticationManager.authenticate(authentication);
 
-        String token = jwtService.createToken(authentication.getName(), auth.getAuthorities());
+            String token = jwtService.createToken(authentication.getName(), auth.getAuthorities());
 
-        User user = updateLastLogin(auth.getName());
+            User user = updateLastLogin(auth.getName());
 
-        return new ResLoginDto(user, token);
+            return new ResLoginDto(user, token);
+        } catch (Exception error) {
+            throw error;
+        }
     }
 
     private @NotNull User updateLastLogin(String email) {

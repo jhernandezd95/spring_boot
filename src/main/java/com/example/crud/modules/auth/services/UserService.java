@@ -1,5 +1,6 @@
 package com.example.crud.modules.auth.services;
 
+import com.example.crud.common.http_errors.NotFoundException;
 import com.example.crud.modules.auth.entities.User;
 import com.example.crud.modules.auth.repositories.UserRepository;
 import lombok.AllArgsConstructor;
@@ -9,10 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -37,7 +35,7 @@ public class UserService implements UserDetailsService {
         Optional<User> user = userRepository.findById(userId);
 
         if (user.isEmpty()) {
-            System.out.println("NOT FOUND");
+            throw new NotFoundException("User not found with id " + userId);
         }
 
         return user.get();
