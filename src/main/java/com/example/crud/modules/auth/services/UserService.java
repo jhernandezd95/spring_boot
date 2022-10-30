@@ -40,4 +40,15 @@ public class UserService implements UserDetailsService {
 
         return user.get();
     }
+
+    public void expireAccounts(int days) {
+        Calendar limit = Calendar.getInstance();
+        limit.setTime(new Date()); // Using today's date
+        limit.add(Calendar.DATE, days); // Adding x days
+        List<User> users = userRepository.findAllByLastLoginBeforeAndIsAccountNonExpired(limit.getTime(), false);
+        users.forEach(user -> {
+            user.setIsAccountNonExpired(true);
+        });
+        userRepository.saveAll(users);
+    }
 }

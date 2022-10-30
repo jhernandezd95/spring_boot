@@ -10,7 +10,6 @@ import com.example.crud.modules.auth.entities.User;
 import com.example.crud.modules.auth.repositories.RoleRepository;
 import com.example.crud.modules.auth.repositories.UserRepository;
 import lombok.AllArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -57,7 +56,7 @@ public class AuthService {
         }).collect(Collectors.toList());
     }
 
-    public ResLoginDto login(@NotNull ReqLoginDto loginDto) {
+    public ResLoginDto login(ReqLoginDto loginDto) {
 
         try {
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
@@ -73,7 +72,7 @@ public class AuthService {
         }
     }
 
-    private @NotNull User updateLastLogin(String email) {
+    private User updateLastLogin(String email) {
         User user = userRepository.findByEmail(email);
         user.setLastLogin(new Date());
         userRepository.save(user);
