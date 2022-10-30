@@ -22,7 +22,7 @@ public class JwtService {
     @Value("${jwt.issuer}")
     private static String ISSUER = "com.example.crud";
 
-    @Value("jwt.expire")
+    @Value("${jwt.expire}")
     private static Long EXPIRES_IN_MILLISECONDS = Long.valueOf(36000);
 
     @Value("${jwt.secret}")

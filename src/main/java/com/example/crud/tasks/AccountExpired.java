@@ -12,7 +12,6 @@ public class AccountExpired {
 
     private static final Logger log = LoggerFactory.getLogger(AccountExpired.class);
     private static final int DAYS = 30;
-
     @Autowired
     private UserService userService;
 

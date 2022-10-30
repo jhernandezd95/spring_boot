@@ -1,4 +1,4 @@
-package com.example.crud.common;
+package com.example.crud.common.configurations;
 
 import static com.example.crud.common.utils.Constants.WHITE_LIST;
 import com.example.crud.common.fiters.JwtFilter;
