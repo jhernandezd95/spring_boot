@@ -22,9 +22,9 @@ public class PinDto {
     @NotBlank
     private String email;
 
-    public PinDto(String type, String pin) {
+    public PinDto(String type, String email) {
         this.type = type;
-        this.pin = pin;
+        this.email = email;
     }
 
 }

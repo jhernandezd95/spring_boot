@@ -2,7 +2,6 @@ package com.example.crud.modules.auth.services;
 
 import static com.example.crud.common.utils.Constants.PIN_FORGOT;
 import static com.example.crud.common.utils.Constants.PIN_ACTIVE_ACCOUNT;
-
 import com.example.crud.common.http_errors.NotFoundException;
 import com.example.crud.common.http_errors.UnauthorizedException;
 import com.example.crud.common.services.JwtService;
@@ -43,6 +42,7 @@ public class AuthService {
     private PinService pinService;
 
     private EmailService emailService;
+
 
     @Transactional
     public User register(UserDto userDto) {
@@ -105,7 +105,6 @@ public class AuthService {
         return user.get();
     }
 
-    @Transactional
     public void activeUser(ActiveUserDto activeUserDto) {
         PinDto pinDto = new PinDto(activeUserDto.getPin(), PIN_ACTIVE_ACCOUNT);
         Optional<Pin> pin = pinService.checkPin(pinDto);

@@ -1,6 +1,5 @@
 package com.example.crud.modules.auth.services;
 
-import com.example.crud.modules.auth.dto.ActiveUserDto;
 import com.example.crud.modules.auth.dto.PinDto;
 import com.example.crud.modules.auth.entities.Pin;
 import com.example.crud.modules.auth.repositories.PinRepository;
@@ -18,11 +17,11 @@ public class PinService {
 
     private static final int LENGTH = 5;
 
-    private String getSaltString(int length) {
+    private String getSaltString() {
         String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         StringBuilder salt = new StringBuilder();
         Random rnd = new Random();
-        while (salt.length() < length) { // length of the random string.
+        while (salt.length() < LENGTH) { // length of the random string.
             int index = (int) (rnd.nextFloat() * SALTCHARS.length());
             salt.append(SALTCHARS.charAt(index));
         }
@@ -30,14 +29,13 @@ public class PinService {
     }
 
     public Pin createPin(PinDto pinDto) {
-        pinDto.setPin(getSaltString(LENGTH));
+        pinDto.setPin(getSaltString());
         Pin pin = new Pin(pinDto);
         pinRepository.save(pin);
         return pin;
     }
 
     public Optional<Pin> checkPin(PinDto pinDto) {
-        Optional<Pin> pin = pinRepository.findByPinEqualsAndTypeEquals(pinDto.getPin(), pinDto.getType());
-        return pin;
+        return pinRepository.findByPinEqualsAndTypeEquals(pinDto.getPin(), pinDto.getType());
     }
 }

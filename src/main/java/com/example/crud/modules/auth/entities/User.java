@@ -25,8 +25,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "user")
-@EntityListeners(AuditingEntityListener.class)
-@EnableJpaAuditing
 @Getter
 @Setter
 @AllArgsConstructor
