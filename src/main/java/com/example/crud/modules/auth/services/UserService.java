@@ -1,6 +1,7 @@
 package com.example.crud.modules.auth.services;
 
 import com.example.crud.common.http_errors.NotFoundException;
+import com.example.crud.common.http_errors.UnauthorizedException;
 import com.example.crud.modules.auth.entities.User;
 import com.example.crud.modules.auth.repositories.UserRepository;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,18 @@ public class UserService implements UserDetailsService {
         }
 
         User user = optional.get();
+
+        if (!user.getIsEnable()) {
+            throw new UnauthorizedException("Account not active");
+        }
+
+        if (user.getIsAccountNonExpired()) {
+            throw new UnauthorizedException("Account expired");
+        }
+
+        if (user.getIsAccountNonLocked()) {
+            throw new UnauthorizedException("Account locked");
+        }
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
