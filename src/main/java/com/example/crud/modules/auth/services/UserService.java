@@ -2,7 +2,10 @@ package com.example.crud.modules.auth.services;
 
 import com.example.crud.common.http_errors.NotFoundException;
 import com.example.crud.common.http_errors.UnauthorizedException;
+import com.example.crud.modules.auth.dto.RolesToUserDto;
+import com.example.crud.modules.auth.entities.Role;
 import com.example.crud.modules.auth.entities.User;
+import com.example.crud.modules.auth.repositories.RoleRepository;
 import com.example.crud.modules.auth.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -18,6 +22,8 @@ import java.util.*;
 public class UserService implements UserDetailsService {
 
     private UserRepository userRepository;
+
+    private RoleRepository roleRepository;
 
     public List<User> getAll() {
         return userRepository.findAll();
@@ -72,12 +78,45 @@ public class UserService implements UserDetailsService {
     }
 
     public void remove(Long id) {
-        Optional<User> user = userRepository.findById(id);
+        User user = this.getById(id);
 
-        if (user.isEmpty()) {
-            throw new NotFoundException("User not found with id " + id);
+        userRepository.delete(user);
+    }
+
+    public User changeLockedValue(Long id) {
+        User user = this.getById(id);
+
+        user.setIsAccountNonLocked(!user.getIsAccountNonLocked());
+
+        userRepository.save(user);
+
+        return user;
+    }
+
+    public User changeExpiredValue(Long id) {
+        User user = this.getById(id);
+
+        user.setIsAccountNonExpired(!user.getIsAccountNonExpired());
+
+        userRepository.save(user);
+
+        return user;
+    }
+
+    @Transactional
+    public void addRoleToUser(Long id, RolesToUserDto rolesToUserDto) {
+        User user = this.getById(id);
+
+        roleRepository.deleteAll(user.getRoles());
+
+        List<Role> roles = roleRepository.findByIdIn(rolesToUserDto.getRolesId());
+
+        if (roles.size() != rolesToUserDto.getRolesId().length) {
+            throw new NotFoundException("Not all provided roles exist");
         }
 
-        userRepository.delete(user.get());
+        user.setRoles(roles);
+
+        userRepository.save(user);
     }
 }
