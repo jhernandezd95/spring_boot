@@ -57,4 +57,14 @@ public class UserService implements UserDetailsService {
         });
         userRepository.saveAll(users);
     }
+
+    public void remove(Long id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if (user.isEmpty()) {
+            throw new NotFoundException("User not found with id " + id);
+        }
+
+        userRepository.delete(user.get());
+    }
 }

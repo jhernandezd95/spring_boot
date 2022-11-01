@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -24,6 +26,8 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE user SET `user`.`deleted_at` = CURRENT_TIMESTAMP WHERE id=?")
 @Table(name = "user")
 @Getter
 @Setter
@@ -66,6 +70,8 @@ public class User implements UserDetails {
 
     @LastModifiedDate
     private Date updatedAt;
+
+    private Date deletedAt;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(

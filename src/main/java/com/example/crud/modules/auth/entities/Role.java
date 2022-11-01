@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -15,6 +17,8 @@ import java.util.Collection;
 import java.util.Date;
 
 @Entity
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE role SET `role`.`deleted_at` = CURRENT_TIMESTAMP WHERE id=?")
 @Table(name = "role")
 @Getter
 @Setter
@@ -36,6 +40,8 @@ public class Role {
 
     @LastModifiedDate
     private Date updatedAt;
+
+    private Date deletedAt;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "created_by_id")
