@@ -35,7 +35,7 @@ public class PinService {
         return pin;
     }
 
-    public Optional<Pin> checkPin(PinDto pinDto) {
-        return pinRepository.findByPinEqualsAndTypeEquals(pinDto.getPin(), pinDto.getType());
+    public Optional<Pin> checkPin(String pin, String type) {
+        return pinRepository.findByPinEqualsAndTypeEquals(pin, type);
     }
 }

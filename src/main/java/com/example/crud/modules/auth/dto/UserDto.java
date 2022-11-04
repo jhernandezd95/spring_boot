@@ -1,6 +1,6 @@
 package com.example.crud.modules.auth.dto;
 
-import com.example.crud.modules.auth.entities.Role;
+import com.example.crud.common.validators.Password;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -21,6 +20,7 @@ public class UserDto implements Serializable {
     @NotBlank
     private final String email;
     @NotNull
+    @Password
     private final String password;
     @Past
     @NotNull

@@ -106,8 +106,7 @@ public class AuthService {
     }
 
     public void activeUser(ActiveUserDto activeUserDto) {
-        PinDto pinDto = new PinDto(activeUserDto.getPin(), PIN_ACTIVE_ACCOUNT);
-        Optional<Pin> pin = pinService.checkPin(pinDto);
+        Optional<Pin> pin = pinService.checkPin(activeUserDto.getPin(), PIN_ACTIVE_ACCOUNT);
 
         if (pin.isPresent()) {
             Optional<User> user = userRepository.findByEmail(activeUserDto.getEmail());
@@ -122,7 +121,7 @@ public class AuthService {
     }
 
     public void resetPassword(ResetPasswordDto resetPasswordDto) {
-        Optional<Pin> pin = pinService.checkPin(new PinDto(resetPasswordDto.getPin(), PIN_FORGOT));
+        Optional<Pin> pin = pinService.checkPin(resetPasswordDto.getPin(), PIN_FORGOT);
 
         if (pin.isPresent()) {
             Optional<User> user = userRepository.findByEmail(pin.get().getEmail());

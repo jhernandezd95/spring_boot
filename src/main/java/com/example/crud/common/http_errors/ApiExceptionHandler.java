@@ -44,7 +44,8 @@ public class ApiExceptionHandler {
             org.springframework.web.bind.support.WebExchangeBindException.class,
             org.springframework.http.converter.HttpMessageNotReadableException.class,
             org.springframework.web.server.ServerWebInputException.class,
-            MethodArgumentNotValidException.class
+            MethodArgumentNotValidException.class,
+            org.springframework.security.authentication.BadCredentialsException.class
     })
     @ResponseBody
     public ErrorMessage badRequest(Exception exception) {

@@ -9,6 +9,7 @@ import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,6 +18,7 @@ import java.util.Collection;
 import java.util.Date;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE role SET `role`.`deleted_at` = CURRENT_TIMESTAMP WHERE id=?")
 @Table(name = "role")
