@@ -6,13 +6,13 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 
-public class PasswordConstraintsValidator implements ConstraintValidator<Password, String> {
+public class PasswordConstraintsValidator implements ConstraintValidator<PasswordValidator, String> {
 
 
 	@Override
 	public boolean isValid(String password, ConstraintValidatorContext constraintValidatorContext) {
 
-		PasswordValidator passwordValidator = new PasswordValidator(
+		org.passay.PasswordValidator passwordValidator = new org.passay.PasswordValidator(
 				Arrays.asList(
 						//Length rule. Min 10 max 128 characters
 						new LengthRule(6, 128),
