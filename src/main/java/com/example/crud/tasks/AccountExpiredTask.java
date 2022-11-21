@@ -8,9 +8,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AccountExpired {
+public class AccountExpiredTask {
 
-    private static final Logger log = LoggerFactory.getLogger(AccountExpired.class);
+    private static final Logger log = LoggerFactory.getLogger(AccountExpiredTask.class);
     private static final int DAYS = 30;
     @Autowired
     private UserService userService;
