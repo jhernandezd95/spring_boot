@@ -1,6 +1,9 @@
 package com.example.crud.modules.product.services;
 
 import com.example.crud.common.http_errors.NotFoundException;
+import com.example.crud.modules.auth.entities.User;
+import com.example.crud.modules.auth.services.AuthService;
+import com.example.crud.modules.product.dto.CreateCategoryDto;
 import com.example.crud.modules.product.entities.Category;
 import com.example.crud.modules.product.repositories.CategoryRepository;
 import lombok.AllArgsConstructor;
@@ -14,6 +17,7 @@ import java.util.Optional;
 public class CategoryService {
 
 	private CategoryRepository categoryRepository;
+	private AuthService authService;
 
 	public List<Category> getAll() {
 		return categoryRepository.findAll();
@@ -33,5 +37,15 @@ public class CategoryService {
 		Category category = this.getById(categoryId);
 
 		categoryRepository.delete(category);
+	}
+
+	public Category createCategory(CreateCategoryDto createCategoryDto) {
+		User createdBy = this.authService.getLoggedUser();
+
+		Category category = new Category(createCategoryDto.getName(), createCategoryDto.getDescription(), createdBy);
+
+		categoryRepository.save(category);
+
+		return category;
 	}
 }

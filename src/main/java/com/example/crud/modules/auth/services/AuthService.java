@@ -1,7 +1,5 @@
 package com.example.crud.modules.auth.services;
 
-import static com.example.crud.common.utils.Constants.PIN_FORGOT;
-import static com.example.crud.common.utils.Constants.PIN_ACTIVE_ACCOUNT;
 import com.example.crud.common.http_errors.NotFoundException;
 import com.example.crud.common.http_errors.UnauthorizedException;
 import com.example.crud.common.services.JwtService;
@@ -14,30 +12,32 @@ import com.example.crud.modules.auth.repositories.UserRepository;
 import com.example.crud.modules.mail.dto.EmailDto;
 import com.example.crud.modules.mail.service.EmailService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.example.crud.common.utils.Constants.PIN_ACTIVE_ACCOUNT;
+import static com.example.crud.common.utils.Constants.PIN_FORGOT;
 
 @Service
 @AllArgsConstructor
 public class AuthService {
 
-    private AuthenticationManager authenticationManager;
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
+	private AuthenticationManager authenticationManager;
+	private UserRepository userRepository;
+	private RoleRepository roleRepository;
 
-    private JwtService jwtService;
+	private JwtService jwtService;
 
     private PinService pinService;
 
@@ -123,31 +123,43 @@ public class AuthService {
     public void resetPassword(ResetPasswordDto resetPasswordDto) {
         Optional<Pin> pin = pinService.checkPin(resetPasswordDto.getPin(), PIN_FORGOT);
 
-        if (pin.isPresent()) {
-            Optional<User> user = userRepository.findByEmail(pin.get().getEmail());
-            if (user.isEmpty()) {
-                throw new NotFoundException("User not found with email " + pin.get().getEmail());
-            }
-            String newPassword = new BCryptPasswordEncoder().encode(resetPasswordDto.getPassword());
-            user.get().setPassword(newPassword);
-            userRepository.save(user.get());
-        } else {
-            throw new NotFoundException("Code not found");
-        }
-    }
+		if (pin.isPresent()) {
+			Optional<User> user = userRepository.findByEmail(pin.get().getEmail());
+			if (user.isEmpty()) {
+				throw new NotFoundException("User not found with email " + pin.get().getEmail());
+			}
+			String newPassword = new BCryptPasswordEncoder().encode(resetPasswordDto.getPassword());
+			user.get().setPassword(newPassword);
+			userRepository.save(user.get());
+		} else {
+			throw new NotFoundException("Code not found");
+		}
+	}
 
-    public void forgot(ForgotDto forgotDto) {
-        Optional<User> user = userRepository.findByEmail(forgotDto.getEmail());
-        if (user.isEmpty()) {
-            throw new NotFoundException("User not found with email " + forgotDto.getEmail());
-        }
+	public void forgot(ForgotDto forgotDto) {
+		Optional<User> user = userRepository.findByEmail(forgotDto.getEmail());
+		if (user.isEmpty()) {
+			throw new NotFoundException("User not found with email " + forgotDto.getEmail());
+		}
 
-        Pin pin = pinService.createPin(new PinDto(PIN_FORGOT, forgotDto.getEmail()));
-        EmailDto emailDto = new EmailDto(
-                forgotDto.getEmail(),
-                "Para reestablecer su contrasena ingrese el codigo " + pin.getPin(),
-                "Olvido de contrasena"
-        );
-        emailService.sendSimpleMail(emailDto);
-    }
+		Pin pin = pinService.createPin(new PinDto(PIN_FORGOT, forgotDto.getEmail()));
+		EmailDto emailDto = new EmailDto(
+				forgotDto.getEmail(),
+				"Para reestablecer su contrasena ingrese el codigo " + pin.getPin(),
+				"Olvido de contrasena"
+		);
+		emailService.sendSimpleMail(emailDto);
+	}
+
+	public User getLoggedUser() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		Optional<User> optionalUser = this.userRepository.findByEmail(auth.getName());
+
+		if (optionalUser.isEmpty()) {
+			throw new NotFoundException("User logged not found with email " + auth.getName());
+		}
+
+		return optionalUser.get();
+	}
 }

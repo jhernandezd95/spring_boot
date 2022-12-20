@@ -12,33 +12,33 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+@Entity
+@Table(name = "stock")
 @EntityListeners(AuditingEntityListener.class)
 @Where(clause = "deleted_at IS NULL")
-@SQLDelete(sql = "UPDATE category SET `category`.`deleted_at` = CURRENT_TIMESTAMP WHERE id=?")
+@SQLDelete(sql = "UPDATE stock SET `stock`.`deleted_at` = CURRENT_TIMESTAMP WHERE id=?")
 @Getter
 @Setter
 @AllArgsConstructor
-@Entity
-@Table(name = "category")
-public class Category {
+public class Stock {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", nullable = false)
 	private Long id;
 
 	@NotNull
-	@NotBlank
-	@Column(nullable = false, unique = true)
-	private String name;
+	@ManyToOne(targetEntity = Product.class, cascade = CascadeType.ALL)
+	private Product product;
 
 	@NotNull
-	@NotBlank
-	@Column(nullable = false)
-	private String description;
+	@Min(0)
+	private int quantity;
+
+	private int saleQuantity;
 
 	@CreatedDate
 	private Date createdAt;
@@ -48,17 +48,31 @@ public class Category {
 
 	private Date deletedAt;
 
+	@NotNull
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by_id")
 	@CreatedBy
 	private User createdBy;
 
-	public Category() {
+	public Stock() {
 	}
 
-	public Category(String name, String description, User createdBy) {
-		this.name = name;
-		this.description = description;
+	public Stock(Product product, int quantity, User createdBy) {
+		this.product = product;
+		this.saleQuantity = 0;
 		this.createdBy = createdBy;
+		this.quantity = quantity;
+	}
+
+	public int getAvailability() {
+		return this.quantity - this.saleQuantity;
+	}
+
+	public void incrementSale(int value) {
+		this.saleQuantity += value;
+	}
+
+	public void decrementSale(int value) {
+		this.saleQuantity -= value;
 	}
 }

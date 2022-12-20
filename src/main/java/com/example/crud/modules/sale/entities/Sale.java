@@ -1,6 +1,8 @@
-package com.example.crud.modules.product.entities;
+package com.example.crud.modules.sale.entities;
 
 import com.example.crud.modules.auth.entities.User;
+import com.example.crud.modules.payment.entities.Payment;
+import com.example.crud.modules.sale.enums.SaleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,32 +15,35 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.Set;
 
+@Entity
+@Table(name = "sale")
 @EntityListeners(AuditingEntityListener.class)
 @Where(clause = "deleted_at IS NULL")
-@SQLDelete(sql = "UPDATE category SET `category`.`deleted_at` = CURRENT_TIMESTAMP WHERE id=?")
+@SQLDelete(sql = "UPDATE sale SET `sale`.`deleted_at` = CURRENT_TIMESTAMP WHERE id=?")
 @Getter
 @Setter
 @AllArgsConstructor
-@Entity
-@Table(name = "category")
-public class Category {
+public class Sale {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", nullable = false)
 	private Long id;
 
 	@NotNull
+	@NotEmpty
 	@NotBlank
 	@Column(nullable = false, unique = true)
-	private String name;
+	private String code;
 
 	@NotNull
-	@NotBlank
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String description;
+	private SaleStatus status;
 
 	@CreatedDate
 	private Date createdAt;
@@ -48,17 +53,23 @@ public class Category {
 
 	private Date deletedAt;
 
+	@OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
+	private Set<SaleProduct> saleProducts;
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by_id")
 	@CreatedBy
 	private User createdBy;
 
-	public Category() {
+	@OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
+	private Set<Payment> payments;
+
+	public Sale() {
 	}
 
-	public Category(String name, String description, User createdBy) {
-		this.name = name;
-		this.description = description;
-		this.createdBy = createdBy;
+	public Sale(SaleStatus status, User user) {
+		this.status = status;
+		this.createdBy = user;
+		this.code = "S__" + this.id;
 	}
 }

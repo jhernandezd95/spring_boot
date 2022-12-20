@@ -7,10 +7,10 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * A DTO for the {@link com.example.crud.modules.product.entities.Brand} entity
+ * A DTO for the {@link com.example.crud.modules.product.entities.Category} entity
  */
 @Data
-public class BrandDto implements Serializable {
+public class CreateCategoryDto implements Serializable {
 	@NotNull
 	@NotBlank
 	private final String name;

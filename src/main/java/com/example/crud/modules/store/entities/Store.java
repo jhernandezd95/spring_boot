@@ -1,4 +1,4 @@
-package com.example.crud.modules.product.entities;
+package com.example.crud.modules.store.entities;
 
 import com.example.crud.modules.auth.entities.User;
 import lombok.AllArgsConstructor;
@@ -16,15 +16,15 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+@Entity
+@Table(name = "store")
 @EntityListeners(AuditingEntityListener.class)
 @Where(clause = "deleted_at IS NULL")
-@SQLDelete(sql = "UPDATE category SET `category`.`deleted_at` = CURRENT_TIMESTAMP WHERE id=?")
+@SQLDelete(sql = "UPDATE store SET `store`.`deleted_at` = CURRENT_TIMESTAMP WHERE id=?")
 @Getter
 @Setter
 @AllArgsConstructor
-@Entity
-@Table(name = "category")
-public class Category {
+public class Store {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", nullable = false)
@@ -48,17 +48,26 @@ public class Category {
 
 	private Date deletedAt;
 
+	@ManyToOne(targetEntity = User.class, cascade = CascadeType.ALL)
+	private User owner;
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by_id")
 	@CreatedBy
 	private User createdBy;
 
-	public Category() {
+	public Store() {
 	}
 
-	public Category(String name, String description, User createdBy) {
+	;
+
+	public Store(String name, String description, User owner, User createdBy) {
 		this.name = name;
 		this.description = description;
+		this.owner = owner;
 		this.createdBy = createdBy;
 	}
+
+	;
+
 }

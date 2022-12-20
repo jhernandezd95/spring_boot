@@ -17,7 +17,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping(path = "/register")
-    public @ResponseBody User getAllUsers(@Validated @RequestBody UserDto userDto) {
+    public @ResponseBody User registerUsers(@Validated @RequestBody UserDto userDto) {
         User user = authService.register(userDto);
         return user;
     }

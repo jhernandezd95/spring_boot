@@ -1,12 +1,13 @@
 package com.example.crud.modules.product.controller;
 
-import com.example.crud.modules.auth.entities.User;
+import com.example.crud.modules.product.dto.CreateProductDto;
 import com.example.crud.modules.product.entities.Product;
 import com.example.crud.modules.product.services.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.DecimalMin;
@@ -23,6 +24,12 @@ public class ProductController {
 	private static final String PATH = "/product";
 	private static final String PATH_ONE = PATH + "/{productId}";
 	private static final String PATH_ONE_BY_SLUG = PATH + "/slug/{slug}";
+
+	@PostMapping(path = PATH)
+	@PreAuthorize("hasAuthority('admin')")
+	public @ResponseBody Product createProduct(@Validated @RequestBody CreateProductDto createProductDto) {
+		return productService.createProduct(createProductDto);
+	}
 
 	@GetMapping(path = PATH)
 	public @ResponseBody Iterable<Product> getAllProducts() {

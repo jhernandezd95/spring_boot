@@ -105,18 +105,28 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void addRoleToUser(Long id, RolesToUserDto rolesToUserDto) {
-        User user = this.getById(id);
+		User user = this.getById(id);
 
-        roleRepository.deleteAll(user.getRoles());
+		roleRepository.deleteAll(user.getRoles());
 
-        List<Role> roles = roleRepository.findByIdIn(rolesToUserDto.getRolesId());
+		List<Role> roles = roleRepository.findByIdIn(rolesToUserDto.getRolesId());
 
-        if (roles.size() != rolesToUserDto.getRolesId().length) {
-            throw new NotFoundException("Not all provided roles exist");
-        }
+		if (roles.size() != rolesToUserDto.getRolesId().length) {
+			throw new NotFoundException("Not all provided roles exist");
+		}
 
-        user.setRoles(roles);
+		user.setRoles(roles);
 
-        userRepository.save(user);
-    }
+		userRepository.save(user);
+	}
+
+	public User findByEmail(String email) {
+		Optional<User> optionalUser = userRepository.findByEmail(email);
+
+		if (optionalUser.isEmpty()) {
+			throw new NotFoundException("User not found with email " + email);
+		}
+
+		return optionalUser.get();
+	}
 }
