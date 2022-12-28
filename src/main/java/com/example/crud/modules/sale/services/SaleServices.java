@@ -38,6 +38,8 @@ public class SaleServices {
 		User user = userService.getById(createSaleDto.getUserId());
 		Sale sale = new Sale(SaleStatus.REQUESTED, user);
 		saleRepository.save(sale);
+		sale.setCode();
+		saleRepository.save(sale);
 		double totalAmount = 0;
 		for (SaleProductDto saleProduct : createSaleDto.getProducts()) {
 			Product product = productService.getById(saleProduct.getProductId());

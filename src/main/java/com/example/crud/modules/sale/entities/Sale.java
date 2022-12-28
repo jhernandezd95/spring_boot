@@ -14,8 +14,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Set;
@@ -34,10 +32,7 @@ public class Sale {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@NotNull
-	@NotEmpty
-	@NotBlank
-	@Column(nullable = false, unique = true)
+	@Column(nullable = true, unique = true)
 	private String code;
 
 	@NotNull
@@ -70,6 +65,9 @@ public class Sale {
 	public Sale(SaleStatus status, User user) {
 		this.status = status;
 		this.createdBy = user;
-		this.code = "S__" + this.id;
+	}
+
+	public void setCode() {
+		this.code = "SALE" + this.id;
 	}
 }
